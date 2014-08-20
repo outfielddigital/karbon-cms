@@ -46,7 +46,7 @@ namespace Karbon.Cms.Core
                                 .Where(x => ExcludedAssemblies.All(y => !x.StartsWith(y)))
                                 .Select(Assembly.LoadFrom)
                                 .ToList();
-
+                            
                             _assemblies = new ReadOnlyCollection<Assembly>(assemblies);
                         }
                     }

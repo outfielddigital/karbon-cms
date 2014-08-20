@@ -13,7 +13,7 @@
     <summary />
     <language />
     <dependencies>
-      <dependency id="Microsoft.AspNet.Mvc" version="4.0.30506.0" />
+      <dependency id="Microsoft.AspNet.Mvc" version="5.2.0" />
       <dependency id="WebActivatorEx" version="2.0.1" />
       <dependency id="MarkdownDeep.NET" version="1.5" />
       <dependency id="ImageResizer.MvcWebConfig" version="3.3.3" />
