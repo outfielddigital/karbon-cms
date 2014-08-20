@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
 using System.Web.Routing;
 using Karbon.Cms.Core;
-using Karbon.Cms.Core.Models;
 using Karbon.Cms.Core.Stores;
 
 namespace Karbon.Cms.Web.Routing
 {
-    internal class KarbonRoute : Route
+    public class KarbonRoute : Route
     {
         private string _url;
-        private IRouteHandler _routeHandler;
+        private readonly RouteValueDictionary _defaults;
+        private readonly IRouteHandler _routeHandler;
 
         /// <summary>
         /// Gets the controller key.
@@ -70,12 +64,21 @@ namespace Karbon.Cms.Web.Routing
         /// <returns>
         /// An object that contains the values from the route definition.
         /// </returns>
-        public override RouteData GetRouteData(System.Web.HttpContextBase httpContext)
+        public override RouteData GetRouteData(HttpContextBase httpContext)
         {
+            var baseUrl = _url.Replace("{*path}", "");
+
             // Setup the route
             var routeData = new RouteData(this, _routeHandler);
             var virtualPath = httpContext.Request.CurrentExecutionFilePath
-                .TrimStart(new[] { '/' });
+                .TrimStart("/");
+
+            if (baseUrl != "")
+            {
+                if (!virtualPath.StartsWith(baseUrl))
+                    return null;
+                virtualPath = virtualPath.Replace(baseUrl, "");
+            }
 
             var action = DefaultAction;
 
@@ -114,7 +117,7 @@ namespace Karbon.Cms.Web.Routing
                 return null;
 
             // We have a model, so lets work out where to direct the request
-            var controller = model.GetController(DefaultController);
+            var controller = model.GetController(_defaults != null && _defaults.ContainsKey(ControllerKey) ? _defaults[ControllerKey] + "Controller" : DefaultController);
             if(controller == null || !controller.HasMethod(action))
                 return null; 
 
@@ -199,6 +202,7 @@ namespace Karbon.Cms.Web.Routing
             : base(url, defaults, routeHandler)
         {
             _url = url;
+            _defaults = defaults;
             _routeHandler = routeHandler;
         }
 
@@ -216,6 +220,7 @@ namespace Karbon.Cms.Web.Routing
             : base(url, defaults, constraints, routeHandler)
         {
             _url = url;
+            _defaults = defaults;
             _routeHandler = routeHandler;
         }
 
@@ -235,6 +240,7 @@ namespace Karbon.Cms.Web.Routing
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
             _url = url;
+            _defaults = defaults;
             _routeHandler = routeHandler;
         }
 
