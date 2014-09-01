@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Web;
 using System.Web.Mvc;
 using Karbon.Cms.Web.Embed;
+using Karbon.Cms.Web.Parsers.KarbonText;
 using MarkdownDeep;
 
 namespace Karbon.Cms.Web
@@ -30,6 +31,28 @@ namespace Karbon.Cms.Web
         public static IHtmlString Md(this HtmlHelper helper, string input)
         {
             return helper.Markdown(input);
+        }
+
+        /// <summary>
+        /// Outputs the given Markdown string as KarbonText.
+        /// </summary>
+        /// <param name="helper">The helper.</param>
+        /// <param name="markdown">Markdown text.</param>
+        /// <returns>The processed HTML</returns>
+        public static IHtmlString KarbonText(this HtmlHelper helper, string markdown)
+        {
+            return new HtmlString(KarbonTextParser.Instance.ParseTags(KarbonWebContext.Current.CurrentPage ?? KarbonWebContext.Current.HomePage, helper.Markdown(markdown).ToHtmlString()));
+        }
+
+        /// <summary>
+        /// Outputs the given Markdown string as KarbonText.
+        /// </summary>
+        /// <param name="helper">The helper.</param>
+        /// <param name="html">HTML to parse.</param>
+        /// <returns>The processed HTML</returns>
+        public static IHtmlString KarbonText(this HtmlHelper helper, IHtmlString html)
+        {
+            return new HtmlString(KarbonTextParser.Instance.ParseTags(KarbonWebContext.Current.CurrentPage ?? KarbonWebContext.Current.HomePage, html.ToHtmlString()));
         }
 
         /// <summary>

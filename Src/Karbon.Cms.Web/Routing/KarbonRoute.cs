@@ -6,10 +6,10 @@ using Karbon.Cms.Core.Stores;
 
 namespace Karbon.Cms.Web.Routing
 {
-    internal class KarbonRoute : Route
+    public class KarbonRoute : Route
     {
-        private string _url;
-        private IRouteHandler _routeHandler;
+        private readonly RouteValueDictionary _defaults;
+        private readonly IRouteHandler _routeHandler;
 
         /// <summary>
         /// Gets the controller key.
@@ -106,9 +106,13 @@ namespace Karbon.Cms.Web.Routing
             if (model == null)
                 return null;
 
+            // If it's the homepage and we need to ignore the homepage then passthrough
+            if (KarbonAppContext.Current.IgnoreHomepage && model.IsHomePage())
+                return null;
+
             // We have a model, so lets work out where to direct the request
-            var controller = model.GetController(DefaultController);
-            if(controller == null || !controller.HasMethod(action))
+            var controller = model.GetController(_defaults != null && _defaults.ContainsKey(ControllerKey) ? _defaults[ControllerKey] + "Controller" : DefaultController);
+            if (controller == null || !controller.HasMethod(action))
                 return null; 
 
             // Route the request
@@ -170,7 +174,6 @@ namespace Karbon.Cms.Web.Routing
             IRouteHandler routeHandler) 
             : base(url, routeHandler)
         {
-            _url = url;
             _routeHandler = routeHandler;
         }
 
@@ -185,7 +188,7 @@ namespace Karbon.Cms.Web.Routing
             IRouteHandler routeHandler) 
             : base(url, defaults, routeHandler)
         {
-            _url = url;
+            _defaults = defaults;
             _routeHandler = routeHandler;
         }
 
@@ -202,7 +205,7 @@ namespace Karbon.Cms.Web.Routing
             IRouteHandler routeHandler) 
             : base(url, defaults, constraints, routeHandler)
         {
-            _url = url;
+            _defaults = defaults;
             _routeHandler = routeHandler;
         }
 
@@ -221,7 +224,7 @@ namespace Karbon.Cms.Web.Routing
             IRouteHandler routeHandler) 
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
-            _url = url;
+            _defaults = defaults;
             _routeHandler = routeHandler;
         }
 

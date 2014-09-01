@@ -17,7 +17,7 @@ namespace Karbon.Cms.Web
         /// <summary>
         /// Initializes components that need to run after the application has started
         /// </summary>
-        public override void Initialize()
+        public void Initialize(bool registerGlobalKarbonTextFilter = true, bool registerKarbonRoute = true, bool ignoreHomepage = false)
         {
             if (_appInitedFlag)
                 throw new InvalidOperationException("The boot manager has already been initialized");
@@ -30,14 +30,18 @@ namespace Karbon.Cms.Web
             // Reset the environment context
             KarbonAppContext.Current.Environment = new WebEnvironmentContext(httpContextBase);
 
+            // Reset the ignore homepage flag
+            KarbonAppContext.Current.IgnoreHomepage = ignoreHomepage;
+
             // Register the media VPP
             HostingEnvironment.RegisterVirtualPathProvider(new MediaVirtualPathProvider());
 
             // Regitser global filters
-            RegisterFilters();
+            if (registerGlobalKarbonTextFilter)
+                RegisterFilters();
 
             // Register required routes
-            RegisterRoutes();
+            RegisterRoutes(registerKarbonRoute);
 
             _appInitedFlag = true;
         }
@@ -54,18 +58,19 @@ namespace Karbon.Cms.Web
         /// <summary>
         /// Registers the routes.
         /// </summary>
-        protected virtual void RegisterRoutes()
+        protected virtual void RegisterRoutes(bool registerKarbonRoute)
         {
             // Add the content route
-            RouteTable.Routes.Insert(0, 
-                new KarbonRoute(
-                    "{*path}",
-                    new RouteValueDictionary(new
-                    {
-                        controller = "Karbon", 
-                        action = "Index"
-                    }),
-                    new MvcRouteHandler()));
+            if (registerKarbonRoute)
+                RouteTable.Routes.Insert(0, 
+                    new KarbonRoute(
+                        "{*path}",
+                        new RouteValueDictionary(new
+                        {
+                            controller = "Karbon", 
+                            action = "Index"
+                        }),
+                        new MvcRouteHandler()));
 
             // Ignore media routes, these will be handled by the media VPP
             RouteTable.Routes.Ignore("media/{*path}");

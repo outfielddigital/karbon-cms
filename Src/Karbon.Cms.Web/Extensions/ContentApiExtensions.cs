@@ -23,5 +23,19 @@ namespace Karbon.Cms.Web
             // NOTE: This currently reports homepage as closed if a sub page is open
             // need to decide if this is the desired effect, or whether homepage should be open too
         }
+
+        /// <summary>
+        /// Determines whether the specified content is the current page.
+        /// </summary>
+        /// <param name="content">The content</param>
+        /// <returns>
+        ///   <c>true</c> if the specified content is the current page; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsCurrent(this IContent content)
+        {
+            var contentUrl = content.Url();
+            var currentUrl = HttpContext.Current.Request.Url.LocalPath;
+            return currentUrl == contentUrl;
+        }
     }
 }

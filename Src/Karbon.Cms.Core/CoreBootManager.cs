@@ -10,7 +10,7 @@ namespace Karbon.Cms.Core
         /// <summary>
         /// Initializes components that need to run after the application has started
         /// </summary>
-        public virtual void Initialize()
+        internal virtual void Initialize()
         {
             if (_appInitedFlag)
                 throw new InvalidOperationException("The boot manager has already been initialized");

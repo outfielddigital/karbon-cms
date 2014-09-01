@@ -23,6 +23,14 @@
         internal EnvironmentContext Environment { get; set; }
 
         /// <summary>
+        /// Whether or not Karbon should ignore the homepage.
+        /// </summary>
+        /// <value>
+        /// Whether to ignore the homepage.
+        /// </value>
+        internal bool IgnoreHomepage { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="KarbonAppContext"/> class.
         /// </summary>
         internal KarbonAppContext()
