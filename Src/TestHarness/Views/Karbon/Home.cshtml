@@ -1,40 +1,30 @@
 ﻿@using TestHarness.Models
-@inherits KarbonView<TestHarness.Models.Home>
-@{
-    Layout = null;
+@inherits KarbonView<Home>
+
+<h2>HOME PAGE - @Model.CurrentPage.Name - @Model.CurrentPage.Depth</h2>
+@foreach (var child in Model.CurrentPage.Children())
+{
+    <p>
+        <span>RelativeUrl:</span> @(child.RelativeUrl) <br /> 
+        <span>Url:</span> @(child.Url())<br />
+        <span>IsChildOf:</span> @child.IsChildOf(Model.CurrentPage)<br />
+        <span>IsAncestorOf:</span> @Model.CurrentPage.IsAncestorOf(child)<br />
+        <span>Parents:</span> @(string.Join(", ", child.Parents().Select(x => x.TypeName)))
+    </p>
 }
 
-<!DOCTYPE html>
+<h2>Products</h2>
+<ul>
+    @foreach(var product in Model.HomePage.Find<Product>(x => x.IsVisible()))
+    {
+        <li>@product.Name</li>
+    }
+</ul>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <div>
-        HOME PAGE - @Model.CurrentPage.Name - @Model.CurrentPage.Depth
-        <br />
-        @foreach (var child in Model.CurrentPage.Children())
-        {
-            <br />
-            <span>RelativeUrl:</span> @(child.RelativeUrl) <br /> 
-            <span>Url:</span> @(child.Url())<br />
-            <span>IsChildOf:</span> @child.IsChildOf(Model.CurrentPage)<br />
-            <span>IsAncestorOf:</span> @Model.CurrentPage.IsAncestorOf(child)<br />
-            <span>Parents:</span> @(string.Join(", ", child.Parents().Select(x => x.TypeName)))<br />
-        }
-        
-        <h2>Products</h2>
-        <ul>
-            @foreach(var product in Model.HomePage.Find<Product>(x => x.IsVisible()))
-            {
-                <li>@product.Name</li>
-            }
-        </ul>
-        @Model.CurrentPage.IsOpen()<br />
-        @(Model.CurrentPage.Get<IEnumerable<string>>("keys"))
-        
-    </div>
-</body>
-</html>
+<p>
+    @Model.CurrentPage.IsOpen() <br />
+    @(Model.CurrentPage.Get<IEnumerable<string>>("keys"))
+</p>
+        <h2>Go to MVC context</h2>       
+        <p>@Html.RouteLink("Go to MVC context - explicit route, controller and action","Default", new {@controller="OtherMvc", @action="OtherMvcAction"})</p>
+        <p>@Html.ActionLink("Go to MVC context - no explicit route, path does not match any Karbon root folders", "OtherMvcAction","OtherMvc")</p>

@@ -7,4 +7,7 @@ Karbon CMS is a database-less ASP.NET MVC CMS full of simple goodness.
 
 ### License
 This project is licensed under [MIT License](http://opensource.org/licenses/mit-license).
-Please see LICENSE.txt for further details.
+Please see LICENSE.txt for further details.  
+
+### Build Server
+<https://ci.appveyor.com/project/theoutfield/karbon-cms> 
