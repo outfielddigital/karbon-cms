@@ -7,9 +7,34 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
+    <script src="~/Scripts/jquery-1.9.0.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/site.css" />
 </head>
 <body>
-    <div>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="~/" class="navbar-brand">Test Harness</a>
+            </div>
+            <nav class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="~/">Home</a></li>
+                    @foreach (var page in Model.HomePage.Children(c => c.IsVisible()))
+                    {
+                        <li class="@(page.IsOpen() ? "active" : null)"><a href="@page.Url()">@page.Name</a></li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="container">
         <h1>@Model.CurrentPage.Name</h1>
         @RenderBody()
     </div>

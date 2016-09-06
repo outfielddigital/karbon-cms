@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using Karbon.Cms.Web.Parsers.KarbonText;
 
@@ -34,7 +31,7 @@ namespace Karbon.Cms.Web.Filters
             var html = Encoding.UTF8.GetString(buffer);
             html = ReplaceTags(html);
             buffer = Encoding.UTF8.GetBytes(html);
-            _response.Write(buffer, offset, buffer.Length);
+            _response.Write(buffer, offset, count);
         }
 
         /// <summary>

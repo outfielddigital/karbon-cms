@@ -4,8 +4,6 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Karbon.Cms.Core.IO
 {
@@ -35,10 +33,6 @@ namespace Karbon.Cms.Core.IO
             if (Directory.Exists(_rootPhysicalPath))
             {
                 RegisterFileSystemWatcher();
-            }
-            else
-            {
-                throw new FileNotFoundException("rootPath not found", _rootPath);
             }
         }
 

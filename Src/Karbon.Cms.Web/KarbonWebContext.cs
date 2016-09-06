@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using Karbon.Cms.Core;
 using Karbon.Cms.Core.Models;
-using Karbon.Cms.Web.Routing;
 
 namespace Karbon.Cms.Web
 {
-    internal class KarbonWebContext
+    public class KarbonWebContext
     {
         #region Factory
+
+        internal KarbonWebContext()
+        {
+        }
 
         private const string HttpContextItemName = "Karbon.Cms.Web.KarbonWebContext";
         private static readonly object Locker = new object();

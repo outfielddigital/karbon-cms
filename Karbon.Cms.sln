@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karbon.Cms.Core", "Src\Karbon.Cms.Core\Karbon.Cms.Core.csproj", "{0CBE1B67-2FB8-40AE-B93F-87FE0BC17246}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karbon.Cms.Web", "Src\Karbon.Cms.Web\Karbon.Cms.Web.csproj", "{4F7AAB85-3046-4BA4-AD8A-0E3A08BC093C}"
@@ -34,6 +36,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Karbon.Cms.NuGet", "Src\Kar
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "49524"
+		SlnRelativePath = "Src\Karbon.Cms.NuGet\"
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{8201E907-8254-4A36-AE26-F1A226FAD0D8}"

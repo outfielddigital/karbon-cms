@@ -2,40 +2,45 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="All">
 
   <!-- 
+    ****************************************
+    * PROPERTIES
+  ****************************************
+  -->
+
+  <PropertyGroup>
+    <RootDir>$(MSBuildProjectDirectory)</RootDir>
+    <BuildDir>$(RootDir)\Build</BuildDir>
+    <PackageDir>$(RootDir)\Package</PackageDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration> 
+    <SolutionDir Condition="'$(SolutionDir)' == ''">$(RootDir)</SolutionDir> 
+  </PropertyGroup>
+
+  <!-- 
   	****************************************
   	* IMPORTS
 	****************************************
   -->
   <PropertyGroup>
-  	<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Packages\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
-  	<MSBuildNuGetTasksPath>$(MSBuildProjectDirectory)\Packages\MSBuildNuGetTasks</MSBuildNuGetTasksPath>
+  	<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+  	<MSBuildNuGetTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildNuGetTasks</MSBuildNuGetTasksPath>
   </PropertyGroup>
   
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
   <Import Project="$(MSBuildNuGetTasksPath)\MSBuild.NuGet.Tasks.Targets" />
-
-  <!-- 
-  	****************************************
-  	* PROPERTIES
-	****************************************
-  -->
-  <PropertyGroup>
-	  <PackageVersion>0.3</PackageVersion>
-    <BuildConfig>Debug</BuildConfig>
-  </PropertyGroup>
-
-  <PropertyGroup>
-	  <RootDir>$(MSBuildProjectDirectory)</RootDir>
-	  <BuildDir>$(RootDir)\Build</BuildDir>
-	  <PackageDir>$(RootDir)\Package</PackageDir>
-  </PropertyGroup>
+  <Import Project="packages\GitVersionTask.1.2.0\Build\GitVersionTask.targets" Condition="Exists('packages\GitVersionTask.1.2.0\Build\GitVersionTask.targets')" />
   
   <!-- 
   	****************************************
   	* TARGETS
 	****************************************
   -->
-  
+
+  <!-- FORCE ASSEMBLEY INFO TO UPDATE -->
+  <Target Name="BeforeBuild" DependsOnTargets="UpdateAssemblyInfo" />
+
   <!-- CLEAN -->
   <Target Name="Clean">
 	  <RemoveDir Directories="$(BuildDir)" Condition="Exists('$(BuildDir)')" />
@@ -44,39 +49,21 @@
   	<MakeDir Directories="$(PackageDir)" />
   </Target>
 
-  <!-- UPDATE ASSEMBLEY VERSION -->
-  <Target Name="UpdateAssemblyInfo" DependsOnTargets="Clean">
-    <ItemGroup>
-      <AssemblyInfoFiles Include="$(RootDir)\Src\Karbon.Cms.Core\Properties\AssemblyInfo.cs" />
-      <AssemblyInfoFiles Include="$(RootDir)\Src\Karbon.Cms.Web\Properties\AssemblyInfo.cs" />
-    </ItemGroup>
-    <FileUpdate
-          Encoding="ASCII"
-          Files="@(AssemblyInfoFiles)"
-          Regex="AssemblyVersion\(&quot;.*&quot;\)\]"
-          ReplacementText="AssemblyVersion(&quot;$(PackageVersion)&quot;)]" />
-    <FileUpdate
-          Encoding="ASCII"
-          Files="@(AssemblyInfoFiles)"
-          Regex="AssemblyFileVersion\(&quot;.*&quot;\)\]"
-          ReplacementText="AssemblyFileVersion(&quot;$(PackageVersion)&quot;)]" />
-  </Target>
-
   <!-- COMPILE -->
-  <Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
+  <Target Name="Compile" DependsOnTargets="Clean">
     <ItemGroup>
       <ProjectFiles Include="$(RootDir)\Src\Karbon.Cms.Core\Karbon.Cms.Core.csproj" />
       <ProjectFiles Include="$(RootDir)\Src\Karbon.Cms.Web\Karbon.Cms.Web.csproj" />
     </ItemGroup>
-    <MSBuild Projects="@(ProjectFiles)" Properties="Configuration=$(BuildConfig);" />
+    <MSBuild Projects="@(ProjectFiles)" Properties="Configuration=$(Configuration);SolutionDir=$(SolutionDir);NoWarn=0436;" />
   </Target>
     
   <!-- PREPAIRE FILES --> 
   <Target Name="PrepairFiles">
 	  <ItemGroup>
       <ContentFiles Include="$(RootDir)\Src\Karbon.Cms.NuGet\**\*" />
-      <LibFiles Include="$(RootDir)\Src\Karbon.Cms.Core\Bin\$(BuildConfig)\Karbon.Cms.Core.dll" />
-      <LibFiles Include="$(RootDir)\Src\Karbon.Cms.Web\Bin\$(BuildConfig)\Karbon.Cms.Web.dll" />
+      <LibFiles Include="$(RootDir)\Src\Karbon.Cms.Core\Bin\$(Configuration)\Karbon.Cms.Core.dll" />
+      <LibFiles Include="$(RootDir)\Src\Karbon.Cms.Web\Bin\$(Configuration)\Karbon.Cms.Web.dll" />
 		  <PackageFiles Include="$(RootDir)\Package.nuspec" /> 
 	  </ItemGroup>
     <Copy SourceFiles="@(ContentFiles)" DestinationFolder="$(BuildDir)\content\%(RecursiveDir)" />
@@ -89,20 +76,23 @@
 	  <ItemGroup>
       <ManifestFiles Include="$(BuildDir)\**\*" Exclude="$(BuildDir)\Package.nuspec" />
     </ItemGroup>
+    <GetVersion SolutionDirectory="$(SolutionDir)">
+      <Output TaskParameter="NugetVersion" PropertyName="GfvNuGetVersion" />
+    </GetVersion>
 	  <ManifestUpdate 
 		  ManifestFile="$(BuildDir)\Package.nuspec"
 		  WorkingDirectory="$(BuildDir)"
-		  Version="$(PackageVersion)"
+		  Version="$(GfvNuGetVersion)"
 	    Files="@(ManifestFiles)" />
   </Target> 
     
   <!-- PACKAGE -->
   <Target Name="Package" DependsOnTargets="Manifest">
-	  <Pack NuGetExePath="$(RootDir)\Packages\NuGet\NuGet.exe" 
+	  <Pack NuGetExePath="$(RootDir)\Tools\NuGet\NuGet.exe" 
 		  ManifestFile="$(BuildDir)\Package.nuspec" 
 		  BasePath="$(BuildDir)" 
 		  OutputDirectory="$(PackageDir)" 
-		  Verbose="true" />
+		  Verbose="false" />
   </Target> 
 
   <Target Name="All" DependsOnTargets="Compile;Package"> </Target>

@@ -1,28 +1,14 @@
 ﻿@using TestHarness.Models
 @inherits KarbonView<Product, Home>
-@{
-    Layout = null;
 
-    var url = Request.Url;
+<p>
+    @(Model.CurrentPage.Parent<Brand>().Title) - @Model.CurrentPage.Name - @Model.CurrentPage.Depth<br />
+    @Model.CurrentPage.IsOpen()<br />
+    @Model.CurrentPage.Parent().IsOpen()<br />
+    @Model.HomePage.IsOpen()
+</p>
+<h2>Files</h2>
+@foreach (var file in Model.CurrentPage.Images())
+{
+    <p><img src="@file.Fit(100).Url()" alt=""/> @file.Width x @file.Height - @file.NiceSize() - @(file.HasNext<Image>()) @file.HasPrev()</p>
 }
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <div>
-        @(Model.CurrentPage.Parent<Brand>().Title) - @Model.CurrentPage.Name - @Model.CurrentPage.Depth<br />
-        @Model.CurrentPage.IsOpen()<br />
-        @Model.CurrentPage.Parent().IsOpen()<br />
-        @Model.HomePage.IsOpen()
-        <br /><br />
-        <h4>Files</h4>
-        @foreach(var file in Model.CurrentPage.Images())
-        {
-            <p><img src="@file.Fit(100).Url()" alt=""/> @file.Width x @file.Height - @file.NiceSize() - @(file.HasNext<Image>()) @file.HasPrev()</p>
-        }
-    </div>
-</body>
-</html>
