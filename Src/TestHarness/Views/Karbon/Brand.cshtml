@@ -1,14 +1,12 @@
 ﻿@using TestHarness.Models
-@inherits KarbonView<TestHarness.Models.Brand>
-@{
-    Layout = "_Layout.cshtml";
-}
+@inherits KarbonView<Brand>
 
-BRAND PAGE - @Model.CurrentPage.Name - @Model.CurrentPage.Slug - @Model.CurrentPage.Depth
+@Html.Md(Model.CurrentPage.Body)
+
+<p>BRAND PAGE - @Model.CurrentPage.Name - @Model.CurrentPage.Slug - @Model.CurrentPage.Depth</p>
 <ul>
     @foreach (var child in Model.CurrentPage.Children<Product>(x => x.IsVisible()))
     {
         <li>@child.Name</li>
     }
 </ul>
-@Html.Md(Model.CurrentPage.Body)

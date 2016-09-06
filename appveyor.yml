@@ -1,0 +1,79 @@
+# master branch build config
+-
+  #---------------------------------#
+  #      general configuration      #
+  #---------------------------------#
+
+  # we use GitVersion to generate official version numbers, so just use the build number by default
+  version: "{build}"
+
+  os: Windows Server 2012
+
+  #---------------------------------#
+  #       build configuration       #
+  #---------------------------------#
+
+  branches:
+    only:
+      - master
+
+  configuration: Release
+
+  build:
+    project: Karbon.Cms.sln
+    verbosity: normal
+
+  before_build:
+    - nuget restore
+
+  #---------------------------------#
+  #       tests configuration       #
+  #---------------------------------#
+
+  after_test:
+    - msbuild Package.build.xml /t:Clean;Package
+
+  #---------------------------------#
+  #      artifacts configuration    #
+  #---------------------------------#
+
+  artifacts:
+    - path: Package\*.nupkg
+
+# default build config
+-
+  #---------------------------------#
+  #      general configuration      #
+  #---------------------------------#
+
+  # we use GitVersion to generate official version numbers, so just use the build number by default
+  version: "{build}"
+
+  os: Windows Server 2012
+
+  #---------------------------------#
+  #       build configuration       #
+  #---------------------------------#
+
+  configuration: Debug
+
+  build:
+    project: Karbon.Cms.sln
+    verbosity: normal
+
+  before_build:
+    - nuget restore
+
+  #---------------------------------#
+  #       tests configuration       #
+  #---------------------------------#
+
+  after_test:
+    - msbuild Package.build.xml /t:Clean;Package
+
+  #---------------------------------#
+  #      artifacts configuration    #
+  #---------------------------------#
+
+  artifacts:
+    - path: Package\*.nupkg

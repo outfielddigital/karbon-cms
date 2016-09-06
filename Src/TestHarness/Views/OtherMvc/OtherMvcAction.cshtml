@@ -1,0 +1,31 @@
+﻿@using TestHarness.Models
+@model dynamic
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Other Mvc Action</title>
+    </head>
+    <body>
+        <div>
+            <h2>Other MVC page outside of Karbon context</h2>
+            <p>@Html.ActionLink("Go again to page outside of Karbon context - implicit controller","OtherMvcAction")</p>
+            <p>@Html.ActionLink("Go again to page outside of Karbon context - explicit controller","OtherMvcAction", "OtherMvc")</p>
+            
+            <p><a href="@KarbonWebContext.Current.HomePage.Url()">Go back to Karbon home page</a></p>
+            
+            <h2>Products (from Karbon)</h2>
+            <ul>
+                @foreach (var product in KarbonWebContext.Current.HomePage.Find<Product>(x => x.IsVisible()))
+                {
+                    <li>@product.Name</li>
+                }
+            </ul>
+        </div>
+    </body>
+</html>
