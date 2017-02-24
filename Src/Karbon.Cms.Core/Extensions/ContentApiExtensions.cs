@@ -117,6 +117,27 @@ namespace Karbon.Cms.Core
         }
 
         /// <summary>
+        /// Gets the descendants content.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <returns></returns>
+        public static IEnumerable<IContent> Descendants(this IContent content)
+        {
+            return StoreManager.ContentStore.GetDescendants(content);
+        }
+
+        /// <summary>
+        /// Gets the descendants content filtered by the provided filter function.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <param name="filter">The filter.</param>
+        /// <returns></returns>
+        public static IEnumerable<IContent> Descendants(this IContent content, Func<IContent, bool> filter)
+        {
+            return content.Descendants().Where(filter);
+        }
+
+        /// <summary>
         /// Gets the child content.
         /// </summary>
         /// <param name="content">The content.</param>
@@ -522,7 +543,7 @@ namespace Karbon.Cms.Core
         /// </returns>
         public static bool IsChildOf(this IContent child, IContent content)
         {
-            return child.RelativeUrl == content.RelativeUrl.TrimEnd("/") + "/" + child.Slug; 
+            return child.RelativeUrl == content.RelativeUrl.TrimEnd("/") + "/" + child.Slug;
         }
 
         /// <summary>
@@ -560,7 +581,7 @@ namespace Karbon.Cms.Core
         /// </returns>
         public static bool HasNext(this IContent content)
         {
-            return content.HasNext(x => true); 
+            return content.HasNext(x => true);
         }
 
         /// <summary>
@@ -647,7 +668,7 @@ namespace Karbon.Cms.Core
         /// <param name="filter">The filter.</param>
         /// <returns></returns>
         public static TContentType Next<TContentType>(this IContent content, Func<TContentType, bool> filter)
-            where  TContentType : IContent
+            where TContentType : IContent
         {
             var parent = content.Parent();
             if (parent == null)
