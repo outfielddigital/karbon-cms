@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using System.Web.Routing;
 using Karbon.Cms.Core;
-using Karbon.Cms.Core.Models;
 using Karbon.Cms.Core.Stores;
 
 namespace Karbon.Cms.Web.Routing
@@ -25,7 +17,7 @@ namespace Karbon.Cms.Web.Routing
         /// <value>
         /// The controller key.
         /// </value>
-        public static string ControllerKey 
+        public static string ControllerKey
         {
             get { return "controller"; }
         }
@@ -63,6 +55,7 @@ namespace Karbon.Cms.Web.Routing
             get { return "Index"; }
         }
 
+
         /// <summary>
         /// Returns information about the requested route.
         /// </summary>
@@ -88,8 +81,8 @@ namespace Karbon.Cms.Web.Routing
                 {
                     var index = virtualPath.LastIndexOf("/", StringComparison.InvariantCulture);
 
-                    var tmpAction = virtualPath.Substring(index, virtualPath.Length - index).Trim(new[] {'/'});
-                    var tmpVirtualPath = virtualPath.Substring(0, index).TrimStart(new[] {'/'});
+                    var tmpAction = virtualPath.Substring(index, virtualPath.Length - index).Trim(new[] { '/' });
+                    var tmpVirtualPath = virtualPath.Substring(0, index).TrimStart(new[] { '/' });
 
                     model = StoreManager.ContentStore.GetByUrl("~/" + tmpVirtualPath);
                     if (model != null)
@@ -98,7 +91,7 @@ namespace Karbon.Cms.Web.Routing
                         action = tmpAction;
                     }
                 }
-                else 
+                else
                 {
                     model = StoreManager.ContentStore.GetByUrl("~/");
                     if (model != null)
@@ -113,29 +106,37 @@ namespace Karbon.Cms.Web.Routing
             if (model == null)
                 return null;
 
-            // We have a model, so lets work out where to direct the request
-            var controller = model.GetController(DefaultController);
-            if(controller == null || !controller.HasMethod(action))
-                return null; 
-
-            // Route the request
-            routeData.Values[ControllerKey] = controller.Name.TrimEnd("Controller");
-            routeData.Values[ActionKey] = action;
-
-            // Set the current web context
-            if (KarbonWebContext.Current == null)
+            switch (virtualPath.ToLower())
             {
-                KarbonWebContext.Current = new KarbonWebContext(new HttpContextWrapper(HttpContext.Current))
+                case "robot.txt":
                     {
-                        CurrentPage = model,
-                        HomePage = StoreManager.ContentStore.GetByUrl("~/")
-                    };
+                        routeData.Values[ControllerKey] = "KarbonUtility";
+                        routeData.Values[ActionKey] = "Robot";
+                    }
+                    break;
+                case "sitemap.xml":
+                    {
+                        // Route the request
+                        routeData.Values[ControllerKey] = "KarbonUtility";
+                        routeData.Values[ActionKey] = "Sitemap";
+                    }
+                    break;
+                default:
+                    {
+                        // We have a model, so lets work out where to direct the request
+                        var controller = model.GetController(DefaultController);
+                        if (controller == null || !controller.HasMethod(action))
+                            return null;
+
+                        // Route the request
+                        routeData.Values[ControllerKey] = controller.Name.TrimEnd("Controller");
+                        routeData.Values[ActionKey] = action;
+                    }
+                    break;
             }
-            else
-            {
-                KarbonWebContext.Current.CurrentPage = model;
-                KarbonWebContext.Current.HomePage = StoreManager.ContentStore.GetByUrl("~/");
-            }
+
+            // Set the current page on current web context
+            KarbonWebContext.Current.CurrentPage = model;
 
             return routeData;
         }
@@ -153,6 +154,12 @@ namespace Karbon.Cms.Web.Routing
             if (KarbonWebContext.Current == null)
                 return null;
 
+            // Check if this route should be handled by Karbon. If not, fallback to other handlers (MVC)
+            var routeRoot = (string)(values["area"] ?? values["controller"]);
+            if (routeRoot != null)
+                if (!KarbonWebContext.Current.HomePage.Children().Any(x => x.Slug.Equals(routeRoot, StringComparison.InvariantCultureIgnoreCase)))
+                    return null;
+
             // Grab the model from the route data collection
             var model = KarbonWebContext.Current.CurrentPage;
             if (model == null)
@@ -162,10 +169,10 @@ namespace Karbon.Cms.Web.Routing
             var vpd = new VirtualPathData(this, model.RelativeUrl.TrimStart("~/"));
 
             // Append any other route data values as querystring params
-            var queryParams = values.Where(kvp => !kvp.Key.Equals(ControllerKey) 
+            var queryParams = values.Where(kvp => !kvp.Key.Equals(ControllerKey)
                 && !kvp.Key.Equals(ActionKey))
                 .ToQueryString();
-            
+
             vpd.VirtualPath += queryParams;
 
             // Return the virtual path
@@ -179,8 +186,8 @@ namespace Karbon.Cms.Web.Routing
         /// </summary>
         /// <param name="url">The URL pattern for the route.</param>
         /// <param name="routeHandler">The object that processes requests for the route.</param>
-        public KarbonRoute(string url, 
-            IRouteHandler routeHandler) 
+        public KarbonRoute(string url,
+            IRouteHandler routeHandler)
             : base(url, routeHandler)
         {
             _url = url;
@@ -193,9 +200,9 @@ namespace Karbon.Cms.Web.Routing
         /// <param name="url">The URL pattern for the route.</param>
         /// <param name="defaults">The values to use for any parameters that are missing in the URL.</param>
         /// <param name="routeHandler">The object that processes requests for the route.</param>
-        public KarbonRoute(string url, 
-            RouteValueDictionary defaults, 
-            IRouteHandler routeHandler) 
+        public KarbonRoute(string url,
+            RouteValueDictionary defaults,
+            IRouteHandler routeHandler)
             : base(url, defaults, routeHandler)
         {
             _url = url;
@@ -209,10 +216,10 @@ namespace Karbon.Cms.Web.Routing
         /// <param name="defaults">The values to use if the URL does not contain all the parameters.</param>
         /// <param name="constraints">A regular expression that specifies valid values for a URL parameter.</param>
         /// <param name="routeHandler">The object that processes requests for the route.</param>
-        public KarbonRoute(string url, 
-            RouteValueDictionary defaults, 
-            RouteValueDictionary constraints, 
-            IRouteHandler routeHandler) 
+        public KarbonRoute(string url,
+            RouteValueDictionary defaults,
+            RouteValueDictionary constraints,
+            IRouteHandler routeHandler)
             : base(url, defaults, constraints, routeHandler)
         {
             _url = url;
@@ -227,11 +234,11 @@ namespace Karbon.Cms.Web.Routing
         /// <param name="constraints">A regular expression that specifies valid values for a URL parameter.</param>
         /// <param name="dataTokens">Custom values that are passed to the route handler, but which are not used to determine whether the route matches a specific URL pattern. These values are passed to the route handler, where they can be used for processing the request.</param>
         /// <param name="routeHandler">The object that processes requests for the route.</param>
-        public KarbonRoute(string url, 
-            RouteValueDictionary defaults, 
-            RouteValueDictionary constraints, 
-            RouteValueDictionary dataTokens, 
-            IRouteHandler routeHandler) 
+        public KarbonRoute(string url,
+            RouteValueDictionary defaults,
+            RouteValueDictionary constraints,
+            RouteValueDictionary dataTokens,
+            IRouteHandler routeHandler)
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
             _url = url;

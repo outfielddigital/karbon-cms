@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Karbon.Cms.Core.Models;
-using Karbon.Cms.Core.Stores;
-using Karbon.Cms.Web.Routing;
 
 namespace Karbon.Cms.Web.Controllers
 {

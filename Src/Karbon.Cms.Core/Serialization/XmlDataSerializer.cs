@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Karbon.Cms.Core.Serialization
+﻿namespace Karbon.Cms.Core.Serialization
 {
     //internal class XmlDataSerializer : DataSerializer
     //{
