@@ -31,8 +31,7 @@ namespace Karbon.Cms.Web.Controllers
             content.AppendLine(String.Empty);
             content.AppendLine(String.Format("Sitemap: {0}/sitemap.xml", KarbonWebContext.Current.HttpContext.Request.Url.GetLeftPart(UriPartial.Authority)));
 
-
-            return Content(content.ToString());
+            return this.Content(content.ToString(), "text/plain", Encoding.UTF8);
         }
 
         public virtual ActionResult Sitemap()
