@@ -39,3 +39,5 @@ _ReSharper.*
 /Assets/
 /Build/
 .DS_Store
+/.vs
+/UpgradeLog.htm
