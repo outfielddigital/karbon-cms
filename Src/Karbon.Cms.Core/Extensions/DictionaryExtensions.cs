@@ -17,10 +17,7 @@ namespace Karbon.Cms.Core
         /// <param name="value">The value.</param>
         public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
         {
-            if (!dict.ContainsKey(key))
-                dict.Add(key, value);
-            else
-                dict[key] = value;
+            dict[key] = value;
         }
     }
 }
